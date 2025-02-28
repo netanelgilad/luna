@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 
 import Image from "next/image";
@@ -12,7 +11,7 @@ import Events from "./components/Events";
 import BottomToolbar from "./components/BottomToolbar";
 
 // Types
-import { AgentConfig, SessionStatus } from "@/app/types";
+import { SessionStatus } from "@/app/types";
 
 // Context providers & hooks
 import { useTranscript } from "@/app/contexts/TranscriptContext";
@@ -23,18 +22,16 @@ import { useHandleServerEvent } from "./hooks/useHandleServerEvent";
 import { createRealtimeConnection } from "./lib/realtimeConnection";
 
 // Agent configs
-import { allAgentSets, defaultAgentSetKey } from "@/app/agentConfigs";
+import { allAgentSets } from "@/app/agentConfigs";
 
 function App() {
-  const searchParams = useSearchParams();
 
   const { transcriptItems, addTranscriptMessage, addTranscriptBreadcrumb } =
     useTranscript();
   const { logClientEvent, logServerEvent } = useEvent();
 
-  const [selectedAgentName, setSelectedAgentName] = useState<string>("");
-  const [selectedAgentConfigSet, setSelectedAgentConfigSet] =
-    useState<AgentConfig[] | null>(null);
+  // Luna is our only agent now, directly import it
+  const lunaAgent = allAgentSets["personalAssistant"][0];
 
   const [dataChannel, setDataChannel] = useState<RTCDataChannel | null>(null);
   const pcRef = useRef<RTCPeerConnection | null>(null);
@@ -69,51 +66,26 @@ function App() {
 
   const handleServerEventRef = useHandleServerEvent({
     setSessionStatus,
-    selectedAgentName,
-    selectedAgentConfigSet,
+    selectedAgentName: lunaAgent.name,
+    selectedAgentConfigSet: allAgentSets["personalAssistant"],
     sendClientEvent,
-    setSelectedAgentName,
   });
 
   useEffect(() => {
-    let finalAgentConfig = searchParams.get("agentConfig");
-    if (!finalAgentConfig || !allAgentSets[finalAgentConfig]) {
-      finalAgentConfig = defaultAgentSetKey;
-      const url = new URL(window.location.toString());
-      url.searchParams.set("agentConfig", finalAgentConfig);
-      window.location.replace(url.toString());
-      return;
-    }
+    // Connect to realtime directly when app initializes
+    connectToRealtime();
+  }, []);
 
-    const agents = allAgentSets[finalAgentConfig];
-    const agentKeyToUse = agents[0]?.name || "";
-
-    setSelectedAgentName(agentKeyToUse);
-    setSelectedAgentConfigSet(agents);
-  }, [searchParams]);
 
   useEffect(() => {
-    if (selectedAgentName && sessionStatus === "DISCONNECTED") {
-      connectToRealtime();
-    }
-  }, [selectedAgentName]);
-
-  useEffect(() => {
-    if (
-      sessionStatus === "CONNECTED" &&
-      selectedAgentConfigSet &&
-      selectedAgentName
-    ) {
-      const currentAgent = selectedAgentConfigSet.find(
-        (a) => a.name === selectedAgentName
-      );
+    if (sessionStatus === "CONNECTED") {
       addTranscriptBreadcrumb(
-        `Agent: ${selectedAgentName}`,
-        currentAgent
+        `Agent: ${lunaAgent.name}`,
+        lunaAgent
       );
       updateSession(true);
     }
-  }, [selectedAgentConfigSet, selectedAgentName, sessionStatus]);
+  }, [sessionStatus]);
 
   useEffect(() => {
     if (sessionStatus === "CONNECTED") {
@@ -228,10 +200,6 @@ function App() {
       "clear audio buffer on session update"
     );
 
-    const currentAgent = selectedAgentConfigSet?.find(
-      (a) => a.name === selectedAgentName
-    );
-
     const turnDetection = isPTTActive
       ? null
       : {
@@ -242,9 +210,8 @@ function App() {
           create_response: true,
         };
 
-    const instructions = currentAgent?.instructions || "";
-    const tools = currentAgent?.tools || [];
-
+    const instructions = lunaAgent?.instructions || "";
+    const tools = lunaAgent?.tools || [];
     const sessionUpdateEvent = {
       type: "session.update",
       session: {
@@ -343,19 +310,6 @@ function App() {
     }
   };
 
-  const handleAgentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newAgentConfig = e.target.value;
-    const url = new URL(window.location.toString());
-    url.searchParams.set("agentConfig", newAgentConfig);
-    window.location.replace(url.toString());
-  };
-
-  const handleSelectedAgentChange = (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const newAgentName = e.target.value;
-    setSelectedAgentName(newAgentName);
-  };
 
   useEffect(() => {
     const storedPushToTalkUI = localStorage.getItem("pushToTalkUI");
@@ -401,7 +355,6 @@ function App() {
     }
   }, [isAudioPlaybackEnabled]);
 
-  const agentSetKey = searchParams.get("agentConfig") || "default";
 
   return (
     <div className="text-base flex flex-col h-screen bg-gray-100 text-gray-800 relative">
@@ -421,65 +374,7 @@ function App() {
           </div>
         </div>
         <div className="flex items-center">
-          <label className="flex items-center text-base gap-1 mr-2 font-medium">
-            Scenario
-          </label>
-          <div className="relative inline-block">
-            <select
-              value={agentSetKey}
-              onChange={handleAgentChange}
-              className="appearance-none border border-gray-300 rounded-lg text-base px-2 py-1 pr-8 cursor-pointer font-normal focus:outline-none"
-            >
-              {Object.keys(allAgentSets).map((agentKey) => (
-                <option key={agentKey} value={agentKey}>
-                  {agentKey}
-                </option>
-              ))}
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-gray-600">
-              <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                <path
-                  fillRule="evenodd"
-                  d="M5.23 7.21a.75.75 0 011.06.02L10 10.44l3.71-3.21a.75.75 0 111.04 1.08l-4.25 3.65a.75.75 0 01-1.04 0L5.21 8.27a.75.75 0 01.02-1.06z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-          </div>
-
-          {agentSetKey && (
-            <div className="flex items-center ml-6">
-              <label className="flex items-center text-base gap-1 mr-2 font-medium">
-                Agent
-              </label>
-              <div className="relative inline-block">
-                <select
-                  value={selectedAgentName}
-                  onChange={handleSelectedAgentChange}
-                  className="appearance-none border border-gray-300 rounded-lg text-base px-2 py-1 pr-8 cursor-pointer font-normal focus:outline-none"
-                >
-                  {selectedAgentConfigSet?.map(agent => (
-                    <option key={agent.name} value={agent.name}>
-                      {agent.name}
-                    </option>
-                  ))}
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-gray-600">
-                  <svg
-                    className="h-4 w-4"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M5.23 7.21a.75.75 0 011.06.02L10 10.44l3.71-3.21a.75.75 0 111.04 1.08l-4.25 3.65a.75.75 0 01-1.04 0L5.21 8.27a.75.75 0 01.02-1.06z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-          )}
+          <span className="text-base font-medium">Luna Personal Assistant</span>
         </div>
       </div>
 
