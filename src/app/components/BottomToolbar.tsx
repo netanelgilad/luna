@@ -13,6 +13,8 @@ interface BottomToolbarProps {
   setIsEventsPaneExpanded: (val: boolean) => void;
   isAudioPlaybackEnabled: boolean;
   setIsAudioPlaybackEnabled: (val: boolean) => void;
+  isMicrophoneEnabled: boolean;
+  setIsMicrophoneEnabled: (val: boolean) => void;
 }
 
 function BottomToolbar({
@@ -27,6 +29,8 @@ function BottomToolbar({
   setIsEventsPaneExpanded,
   isAudioPlaybackEnabled,
   setIsAudioPlaybackEnabled,
+  isMicrophoneEnabled,
+  setIsMicrophoneEnabled,
 }: BottomToolbarProps) {
   const isConnected = sessionStatus === "CONNECTED";
   const isConnecting = sessionStatus === "CONNECTING";
@@ -76,15 +80,29 @@ function BottomToolbar({
           onMouseUp={handleTalkButtonUp}
           onTouchStart={handleTalkButtonDown}
           onTouchEnd={handleTalkButtonUp}
-          disabled={!isPTTActive}
+          disabled={!isPTTActive || !isMicrophoneEnabled}
           className={
             (isPTTUserSpeaking ? "bg-gray-300" : "bg-gray-200") +
             " py-1 px-4 cursor-pointer rounded-full" +
-            (!isPTTActive ? " bg-gray-100 text-gray-400" : "")
+            ((!isPTTActive || !isMicrophoneEnabled) ? " bg-gray-100 text-gray-400" : "")
           }
         >
           Talk
         </button>
+      </div>
+
+      <div className="flex flex-row items-center gap-2">
+        <input
+          id="microphone-toggle"
+          type="checkbox"
+          checked={isMicrophoneEnabled}
+          onChange={e => setIsMicrophoneEnabled(e.target.checked)}
+          disabled={!isConnected}
+          className="w-4 h-4"
+        />
+        <label htmlFor="microphone-toggle" className="flex items-center cursor-pointer">
+          Microphone
+        </label>
       </div>
 
       <div className="flex flex-row items-center gap-2">
