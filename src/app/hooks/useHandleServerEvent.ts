@@ -10,7 +10,6 @@ export interface UseHandleServerEventParams {
   selectedAgentName: string;
   selectedAgentConfigSet: AgentConfig[] | null;
   sendClientEvent: (eventObj: any, eventNameSuffix?: string) => void;
-  setSelectedAgentName: (name: string) => void;
   shouldForceResponse?: boolean;
 }
 
@@ -19,7 +18,6 @@ export function useHandleServerEvent({
   selectedAgentName,
   selectedAgentConfigSet,
   sendClientEvent,
-  setSelectedAgentName,
 }: UseHandleServerEventParams) {
   const {
     transcriptItems,
@@ -61,16 +59,15 @@ export function useHandleServerEvent({
       });
       sendClientEvent({ type: "response.create" });
     } else if (functionCallParams.name === "transferAgents") {
-      const destinationAgent = args.destination_agent;
-      const newAgentConfig =
-        selectedAgentConfigSet?.find((a) => a.name === destinationAgent) || null;
-      if (newAgentConfig) {
-        setSelectedAgentName(destinationAgent);
-      }
+      // Simplified agent transfer logic since we only have Luna agent
+      // Always staying with the current Luna agent
       const functionCallOutput = {
-        destination_agent: destinationAgent,
-        did_transfer: !!newAgentConfig,
+        destination_agent: selectedAgentName, // Always return the current agent (Luna)
+        did_transfer: false, // No transfer needed since we only have one agent
+        message: "Using Luna assistant only"
       };
+      
+      // Keep event communication intact
       sendClientEvent({
         type: "conversation.item.create",
         item: {
