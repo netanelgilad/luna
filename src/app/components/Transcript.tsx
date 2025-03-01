@@ -1,10 +1,15 @@
-"use-client";
+"use client";
 
 import React, { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { TranscriptItem } from "@/app/types";
 import Image from "next/image";
 import { useTranscript } from "@/app/contexts/TranscriptContext";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
+import remarkBreaks from "remark-breaks";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 export interface TranscriptProps {
   userText: string;
@@ -66,6 +71,101 @@ function Transcript({
     }
   };
 
+  // Custom component renderers for ReactMarkdown
+  const markdownComponents = {
+    code({node, inline, className, children, ...props}: any) {
+      const match = /language-(\w+)/.exec(className || '');
+      const language = match ? match[1] : '';
+      
+      const handleCopyCode = (code: string) => {
+        navigator.clipboard.writeText(code);
+      };
+      
+      return !inline ? (
+        <div className="relative group">
+          <button 
+            onClick={() => handleCopyCode(String(children))}
+            className="absolute top-2 right-2 bg-gray-700 hover:bg-gray-600 text-white rounded px-2 py-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            Copy
+          </button>
+          <SyntaxHighlighter
+            style={atomDark}
+            language={language}
+            PreTag="div"
+            className="rounded-md my-2"
+            {...props}
+          >
+            {String(children).replace(/\n$/, '')}
+          </SyntaxHighlighter>
+        </div>
+      ) : (
+        <code className="bg-gray-200 rounded px-1 py-0.5 dark:bg-gray-700 dark:text-gray-200" {...props}>
+          {children}
+        </code>
+      );
+    },
+    a({node, children, href, ...props}: any) {
+      return (
+        <a 
+          href={href} 
+          className="text-blue-500 hover:underline" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          {...props}
+        >
+          {children}
+        </a>
+      );
+    },
+    ul({children, ...props}: any) {
+      return <ul className="list-disc pl-6 my-2" {...props}>{children}</ul>;
+    },
+    ol({children, ...props}: any) {
+      return <ol className="list-decimal pl-6 my-2" {...props}>{children}</ol>;
+    },
+    table({children, ...props}: any) {
+      return (
+        <div className="overflow-x-auto my-4">
+          <table className="min-w-full divide-y divide-gray-300 border" {...props}>
+            {children}
+          </table>
+        </div>
+      );
+    },
+    thead({children, ...props}: any) {
+      return <thead className="bg-gray-100" {...props}>{children}</thead>;
+    },
+    th({children, ...props}: any) {
+      return <th className="px-3 py-2 text-left text-sm font-semibold" {...props}>{children}</th>;
+    },
+    td({children, ...props}: any) {
+      return <td className="px-3 py-2 text-sm border-t" {...props}>{children}</td>;
+    },
+    blockquote({children, ...props}: any) {
+      return (
+        <blockquote className="pl-4 border-l-4 border-gray-300 my-2 italic" {...props}>
+          {children}
+        </blockquote>
+      );
+    },
+    hr({...props}) {
+      return <hr className="my-4 border-gray-300" {...props} />;
+    },
+    h1({children, ...props}: any) {
+      return <h1 className="text-2xl font-bold my-4" {...props}>{children}</h1>;
+    },
+    h2({children, ...props}: any) {
+      return <h2 className="text-xl font-bold my-3" {...props}>{children}</h2>;
+    },
+    h3({children, ...props}: any) {
+      return <h3 className="text-lg font-bold my-2" {...props}>{children}</h3>;
+    },
+    h4({children, ...props}: any) {
+      return <h4 className="text-base font-bold my-1" {...props}>{children}</h4>;
+    }
+  };
+
   return (
     <div className="flex flex-col flex-1 bg-white min-h-0 rounded-xl">
       <div className="relative flex-1 min-h-0">
@@ -102,8 +202,14 @@ function Transcript({
                     <div className={`text-xs ${isUser ? "text-gray-400" : "text-gray-500"} font-mono`}>
                       {timestamp}
                     </div>
-                    <div className={`whitespace-pre-wrap ${messageStyle}`}>
-                      <ReactMarkdown>{displayTitle}</ReactMarkdown>
+                    <div className={`markdown-content ${messageStyle}`}>
+                      <ReactMarkdown 
+                        components={markdownComponents}
+                        remarkPlugins={[remarkGfm, remarkBreaks]}
+                        rehypePlugins={[rehypeRaw]}
+                      >
+                        {displayTitle}
+                      </ReactMarkdown>
                     </div>
                   </div>
                 </div>
