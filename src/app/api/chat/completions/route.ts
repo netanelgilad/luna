@@ -12,7 +12,18 @@ export async function POST(req: Request) {
       messages,
     });
 
-    return NextResponse.json(completion);
+    // Extract token usage information
+    const tokenUsage = {
+      promptTokens: completion.usage?.prompt_tokens || 0,
+      completionTokens: completion.usage?.completion_tokens || 0,
+      totalTokens: completion.usage?.total_tokens || 0,
+    };
+
+    // Return completion with explicit token usage
+    return NextResponse.json({
+      ...completion,
+      tokenUsage,
+    });
   } catch (error: any) {
     console.error("Error in /chat/completions:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });

@@ -9,6 +9,7 @@ import Image from "next/image";
 import Transcript from "./components/Transcript";
 import Events from "./components/Events";
 import BottomToolbar from "./components/BottomToolbar";
+import TokenCounter from "./components/TokenCounter";
 
 // Types
 import { SessionStatus } from "@/app/types";
@@ -16,6 +17,7 @@ import { SessionStatus } from "@/app/types";
 // Context providers & hooks
 import { useTranscript } from "@/app/contexts/TranscriptContext";
 import { useEvent } from "@/app/contexts/EventContext";
+import { useTokenContext } from "@/app/contexts/TokenContext";
 import { useHandleServerEvent } from "./hooks/useHandleServerEvent";
 
 // Utilities
@@ -29,6 +31,7 @@ function App() {
   const { transcriptItems, addTranscriptMessage, addTranscriptBreadcrumb } =
     useTranscript();
   const { logClientEvent, logServerEvent } = useEvent();
+  const { incrementInputTokens, incrementOutputTokens } = useTokenContext();
 
   // Luna is our only agent now, directly import it
   const lunaAgent = allAgentSets["personalAssistant"][0];
@@ -72,6 +75,8 @@ function App() {
     selectedAgentName: lunaAgent.name,
     selectedAgentConfigSet: allAgentSets["personalAssistant"],
     sendClientEvent,
+    incrementInputTokens,
+    incrementOutputTokens,
   });
 
   useEffect(() => {
@@ -215,6 +220,17 @@ function App() {
         const eventData = JSON.parse(e.data);
         // Dispatch a custom event so our speech cancellation detection can work
         document.dispatchEvent(new CustomEvent("serverEvent", { detail: eventData }));
+        
+        // Track token usage if available in the server event
+        if (eventData.token_usage) {
+          if (eventData.token_usage.input_tokens) {
+            incrementInputTokens(eventData.token_usage.input_tokens);
+          }
+          if (eventData.token_usage.output_tokens) {
+            incrementOutputTokens(eventData.token_usage.output_tokens);
+          }
+        }
+        
         handleServerEventRef.current(eventData);
       });
 
@@ -555,6 +571,9 @@ function App() {
 
   return (
     <div className="text-base flex flex-col h-screen bg-gray-100 text-gray-800 relative">
+      {/* Token Counter */}
+      <TokenCounter />
+      
       <div className="p-5 text-lg font-semibold flex justify-between items-center">
         <div className="flex items-center">
           <div onClick={() => window.location.reload()} style={{ cursor: 'pointer' }}>

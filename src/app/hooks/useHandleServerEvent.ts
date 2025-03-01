@@ -3,6 +3,7 @@
 import { ServerEvent, SessionStatus, AgentConfig } from "@/app/types";
 import { useTranscript } from "@/app/contexts/TranscriptContext";
 import { useEvent } from "@/app/contexts/EventContext";
+import { useTokenContext } from "@/app/contexts/TokenContext";
 import { useRef } from "react";
 
 export interface UseHandleServerEventParams {
@@ -11,6 +12,8 @@ export interface UseHandleServerEventParams {
   selectedAgentConfigSet: AgentConfig[] | null;
   sendClientEvent: (eventObj: any, eventNameSuffix?: string) => void;
   shouldForceResponse?: boolean;
+  incrementInputTokens?: (count: number) => void;
+  incrementOutputTokens?: (count: number) => void;
 }
 
 export function useHandleServerEvent({
@@ -18,6 +21,8 @@ export function useHandleServerEvent({
   selectedAgentName,
   selectedAgentConfigSet,
   sendClientEvent,
+  incrementInputTokens,
+  incrementOutputTokens,
 }: UseHandleServerEventParams) {
   const {
     transcriptItems,
@@ -28,6 +33,7 @@ export function useHandleServerEvent({
   } = useTranscript();
 
   const { logServerEvent } = useEvent();
+  const tokenContext = useTokenContext();
 
   const handleFunctionCall = async (functionCallParams: {
     name: string;
@@ -101,6 +107,30 @@ export function useHandleServerEvent({
 
   const handleServerEvent = (serverEvent: ServerEvent) => {
     logServerEvent(serverEvent);
+
+    // Track token usage if available in the server event
+    if ('token_usage' in serverEvent) {
+      const tokenUsage = (serverEvent as any).token_usage;
+      if (tokenUsage) {
+        if (tokenUsage.input_tokens) {
+          const inputCount = tokenUsage.input_tokens;
+          if (incrementInputTokens) {
+            incrementInputTokens(inputCount);
+          } else {
+            tokenContext.incrementInputTokens(inputCount);
+          }
+        }
+        
+        if (tokenUsage.output_tokens) {
+          const outputCount = tokenUsage.output_tokens;
+          if (incrementOutputTokens) {
+            incrementOutputTokens(outputCount);
+          } else {
+            tokenContext.incrementOutputTokens(outputCount);
+          }
+        }
+      }
+    }
 
     switch (serverEvent.type) {
       case "session.created": {
