@@ -107,13 +107,23 @@ export function useHandleServerEvent({
 
   const handleServerEvent = (serverEvent: ServerEvent) => {
     logServerEvent(serverEvent);
+    
+    // Log all server events to understand their structure
+    console.log('Server Event Received:', serverEvent);
+    console.log('Server Event Type:', serverEvent.type);
+    console.log('Full Server Event Data:', JSON.stringify(serverEvent, null, 2));
 
     // Track token usage if available in the server event
+    console.log('Checking for token_usage property:', 'token_usage' in serverEvent);
+    
     if ('token_usage' in serverEvent) {
+      console.log('Token usage property found:', (serverEvent as any).token_usage);
       const tokenUsage = (serverEvent as any).token_usage;
       if (tokenUsage) {
+        console.log('Token usage details:', tokenUsage);
         if (tokenUsage.input_tokens) {
           const inputCount = tokenUsage.input_tokens;
+          console.log('Input tokens found:', inputCount);
           if (incrementInputTokens) {
             incrementInputTokens(inputCount);
           } else {
@@ -123,12 +133,26 @@ export function useHandleServerEvent({
         
         if (tokenUsage.output_tokens) {
           const outputCount = tokenUsage.output_tokens;
+          console.log('Output tokens found:', outputCount);
           if (incrementOutputTokens) {
             incrementOutputTokens(outputCount);
           } else {
             tokenContext.incrementOutputTokens(outputCount);
           }
         }
+      }
+    } else {
+      // Log alternative properties that might contain token information
+      console.log('No token_usage property found. Looking for alternatives...');
+      
+      // Check usage property
+      if ('usage' in serverEvent) {
+        console.log('Found usage property:', (serverEvent as any).usage);
+      }
+      
+      // Check for usage in response
+      if (serverEvent.response && 'usage' in serverEvent.response) {
+        console.log('Found usage in response:', (serverEvent as any).response.usage);
       }
     }
 
@@ -188,13 +212,44 @@ export function useHandleServerEvent({
       }
 
       case "response.done": {
+        console.log('Response done event:', serverEvent);
+        console.log('Response object details:', serverEvent.response);
+        
+        // Check if response contains token usage information
+        if (serverEvent.response && 'usage' in serverEvent.response) {
+          console.log('Token usage in response.done:', (serverEvent as any).response.usage);
+          
+          const usage = (serverEvent as any).response.usage;
+          if (usage) {
+            if (usage.prompt_tokens) {
+              console.log('Found prompt_tokens in response.done:', usage.prompt_tokens);
+              if (incrementInputTokens) {
+                incrementInputTokens(usage.prompt_tokens);
+              } else {
+                tokenContext.incrementInputTokens(usage.prompt_tokens);
+              }
+            }
+            
+            if (usage.completion_tokens) {
+              console.log('Found completion_tokens in response.done:', usage.completion_tokens);
+              if (incrementOutputTokens) {
+                incrementOutputTokens(usage.completion_tokens);
+              } else {
+                tokenContext.incrementOutputTokens(usage.completion_tokens);
+              }
+            }
+          }
+        }
+        
         if (serverEvent.response?.output) {
+          console.log('Response output items:', serverEvent.response.output);
           serverEvent.response.output.forEach((outputItem) => {
             if (
               outputItem.type === "function_call" &&
               outputItem.name &&
               outputItem.arguments
             ) {
+              console.log('Function call output item:', outputItem);
               handleFunctionCall({
                 name: outputItem.name,
                 call_id: outputItem.call_id,
