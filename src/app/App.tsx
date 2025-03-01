@@ -108,6 +108,15 @@ function App() {
 
   useEffect(() => {
     if (sessionStatus === "CONNECTED") {
+      console.log(
+        `updatingSession, isAudioPlaybackEnabled=${isAudioPlaybackEnabled} sessionStatus=${sessionStatus}`
+      );
+      updateSession();
+    }
+  }, [isAudioPlaybackEnabled]);
+
+  useEffect(() => {
+    if (sessionStatus === "CONNECTED") {
       // When the microphone state changes, we need to reconnect with the new state
       // This ensures we either get a real microphone track or a silent track
       if (pcRef.current) {
@@ -389,7 +398,7 @@ function App() {
     const sessionUpdateEvent = {
       type: "session.update",
       session: {
-        modalities: ["text", "audio"],
+        modalities: isAudioPlaybackEnabled ? ["text", "audio"] : ["text"],
         instructions,
         voice: "coral",
         input_audio_format: "pcm16",
@@ -600,6 +609,14 @@ function App() {
       } else {
         audioElementRef.current.pause();
       }
+    }
+  }, [isAudioPlaybackEnabled]);
+
+  // Automatically disable microphone and push-to-talk when audio mode is turned off
+  useEffect(() => {
+    if (!isAudioPlaybackEnabled) {
+      setIsMicrophoneEnabled(false);
+      setIsPTTActive(false);
     }
   }, [isAudioPlaybackEnabled]);
 

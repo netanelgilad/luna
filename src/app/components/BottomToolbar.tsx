@@ -115,7 +115,7 @@ function BottomToolbar({
           className="w-4 h-4"
         />
         <label htmlFor="audio-playback" className="flex items-center cursor-pointer">
-          Audio playback
+          Audio mode
         </label>
       </div>
 

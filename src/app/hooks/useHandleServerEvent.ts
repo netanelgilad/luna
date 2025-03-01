@@ -217,6 +217,15 @@ export function useHandleServerEvent({
         break;
       }
 
+      case "response.text.delta": {
+        const itemId = serverEvent.item_id;
+        const deltaText = serverEvent.delta || "";
+        if (itemId) {
+          updateTranscriptMessage(itemId, deltaText, true);
+        }
+        break;
+      }
+
       case "response.done": {
         // Check if response contains token usage information
         if (serverEvent.response && 'usage' in serverEvent.response) {
