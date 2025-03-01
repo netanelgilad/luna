@@ -2,7 +2,6 @@
 
 Luna is a personal assistant designed specifically for Netanel Gilad. It provides automated assistance with the unique ability to update its own configuration, allowing it to adapt and improve over time to better meet Netanel's needs.
 
-![Screenshot of Luna Personal Assistant](/public/screenshot.png)
 
 ## Setup
 
