@@ -25,33 +25,22 @@ export const TokenContextProvider = ({ children }: { children: ReactNode }) => {
   });
 
   const incrementInputTokens = (count: number) => {
-    console.log(`Incrementing input tokens by ${count}`);
-    setTokenCounts((prev) => {
-      const newValues = {
-        inputTokens: prev.inputTokens + count,
-        outputTokens: prev.outputTokens,
-        totalTokens: prev.totalTokens + count,
-      };
-      console.log(`Token counts updated: Input: ${newValues.inputTokens}, Output: ${newValues.outputTokens}, Total: ${newValues.totalTokens}`);
-      return newValues;
-    });
+    setTokenCounts((prev) => ({
+      inputTokens: prev.inputTokens + count,
+      outputTokens: prev.outputTokens,
+      totalTokens: prev.totalTokens + count,
+    }));
   };
 
   const incrementOutputTokens = (count: number) => {
-    console.log(`Incrementing output tokens by ${count}`);
-    setTokenCounts((prev) => {
-      const newValues = {
-        inputTokens: prev.inputTokens,
-        outputTokens: prev.outputTokens + count,
-        totalTokens: prev.totalTokens + count,
-      };
-      console.log(`Token counts updated: Input: ${newValues.inputTokens}, Output: ${newValues.outputTokens}, Total: ${newValues.totalTokens}`);
-      return newValues;
-    });
+    setTokenCounts((prev) => ({
+      inputTokens: prev.inputTokens,
+      outputTokens: prev.outputTokens + count,
+      totalTokens: prev.totalTokens + count,
+    }));
   };
 
   const resetTokenCounts = () => {
-    console.log('Resetting token counts to zero');
     setTokenCounts({
       inputTokens: 0,
       outputTokens: 0,

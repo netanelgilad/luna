@@ -221,63 +221,48 @@ function App() {
         // Dispatch a custom event so our speech cancellation detection can work
         document.dispatchEvent(new CustomEvent("serverEvent", { detail: eventData }));
         
-        // Debug events to understand structure
-        console.log("Server event received:", eventData);
-        
         // Check for token usage in various locations in the event data
         // Standard location
         if (eventData.token_usage) {
-          console.log("Found token_usage:", eventData.token_usage);
           if (eventData.token_usage.input_tokens) {
             incrementInputTokens(eventData.token_usage.input_tokens);
-            console.log("Incremented input tokens:", eventData.token_usage.input_tokens);
           }
           if (eventData.token_usage.output_tokens) {
             incrementOutputTokens(eventData.token_usage.output_tokens);
-            console.log("Incremented output tokens:", eventData.token_usage.output_tokens);
           }
         }
         
         // Alternative location - check if token info is in completion_info
         if (eventData.completion_info?.token_usage) {
-          console.log("Found token_usage in completion_info:", eventData.completion_info.token_usage);
           if (eventData.completion_info.token_usage.prompt_tokens) {
             incrementInputTokens(eventData.completion_info.token_usage.prompt_tokens);
-            console.log("Incremented input tokens from completion_info:", eventData.completion_info.token_usage.prompt_tokens);
           }
           if (eventData.completion_info.token_usage.completion_tokens) {
             incrementOutputTokens(eventData.completion_info.token_usage.completion_tokens);
-            console.log("Incremented output tokens from completion_info:", eventData.completion_info.token_usage.completion_tokens);
           }
         }
         
         // Check if token info is in a nested structure
         if (eventData.item?.content?.[0]?.token_usage) {
-          console.log("Found token_usage in item content:", eventData.item.content[0].token_usage);
           const tokenUsage = eventData.item.content[0].token_usage;
           if (tokenUsage.prompt_tokens || tokenUsage.input_tokens) {
             const inputTokens = tokenUsage.prompt_tokens || tokenUsage.input_tokens;
             incrementInputTokens(inputTokens);
-            console.log("Incremented input tokens from item content:", inputTokens);
           }
           if (tokenUsage.completion_tokens || tokenUsage.output_tokens) {
             const outputTokens = tokenUsage.completion_tokens || tokenUsage.output_tokens;
             incrementOutputTokens(outputTokens);
-            console.log("Incremented output tokens from item content:", outputTokens);
           }
         }
         
         // Check if token info is in response.usage (seen in example JSON)
         if (eventData.response?.usage) {
-          console.log("Found token usage in response.usage:", eventData.response.usage);
           const usage = eventData.response.usage;
           if (usage.input_tokens) {
             incrementInputTokens(usage.input_tokens);
-            console.log("Incremented input tokens from response.usage:", usage.input_tokens);
           }
           if (usage.output_tokens) {
             incrementOutputTokens(usage.output_tokens);
-            console.log("Incremented output tokens from response.usage:", usage.output_tokens);
           }
         }
         
