@@ -267,6 +267,20 @@ function App() {
           }
         }
         
+        // Check if token info is in response.usage (seen in example JSON)
+        if (eventData.response?.usage) {
+          console.log("Found token usage in response.usage:", eventData.response.usage);
+          const usage = eventData.response.usage;
+          if (usage.input_tokens) {
+            incrementInputTokens(usage.input_tokens);
+            console.log("Incremented input tokens from response.usage:", usage.input_tokens);
+          }
+          if (usage.output_tokens) {
+            incrementOutputTokens(usage.output_tokens);
+            console.log("Incremented output tokens from response.usage:", usage.output_tokens);
+          }
+        }
+        
         handleServerEventRef.current(eventData);
       });
 

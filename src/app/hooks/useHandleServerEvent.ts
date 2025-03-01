@@ -116,6 +116,7 @@ export function useHandleServerEvent({
     // Track token usage if available in the server event
     console.log('Checking for token_usage property:', 'token_usage' in serverEvent);
     
+    // Check if top-level event has token usage
     if ('token_usage' in serverEvent) {
       console.log('Token usage property found:', (serverEvent as any).token_usage);
       const tokenUsage = (serverEvent as any).token_usage;
@@ -141,18 +142,41 @@ export function useHandleServerEvent({
           }
         }
       }
-    } else {
-      // Log alternative properties that might contain token information
-      console.log('No token_usage property found. Looking for alternatives...');
+    } 
+    // Check if response object has usage information
+    else if (serverEvent.response && 'usage' in serverEvent.response) {
+      console.log('Found usage in response:', (serverEvent as any).response.usage);
+      const usage = (serverEvent as any).response.usage;
       
-      // Check usage property
-      if ('usage' in serverEvent) {
-        console.log('Found usage property:', (serverEvent as any).usage);
+      if (usage) {
+        if (usage.input_tokens) {
+          const inputCount = usage.input_tokens;
+          console.log('Input tokens found in response.usage:', inputCount);
+          if (incrementInputTokens) {
+            incrementInputTokens(inputCount);
+          } else {
+            tokenContext.incrementInputTokens(inputCount);
+          }
+        }
+        
+        if (usage.output_tokens) {
+          const outputCount = usage.output_tokens;
+          console.log('Output tokens found in response.usage:', outputCount);
+          if (incrementOutputTokens) {
+            incrementOutputTokens(outputCount);
+          } else {
+            tokenContext.incrementOutputTokens(outputCount);
+          }
+        }
       }
+    } 
+    // Log other potential locations for token information
+    else {
+      console.log('No token usage information found in expected locations. Looking for alternatives...');
       
-      // Check for usage in response
-      if (serverEvent.response && 'usage' in serverEvent.response) {
-        console.log('Found usage in response:', (serverEvent as any).response.usage);
+      // Check usage property at top level
+      if ('usage' in serverEvent) {
+        console.log('Found usage property at top level:', (serverEvent as any).usage);
       }
     }
 
@@ -216,30 +240,35 @@ export function useHandleServerEvent({
         console.log('Response object details:', serverEvent.response);
         
         // Check if response contains token usage information
+        // Check if response contains token usage information
         if (serverEvent.response && 'usage' in serverEvent.response) {
           console.log('Token usage in response.done:', (serverEvent as any).response.usage);
           
           const usage = (serverEvent as any).response.usage;
           if (usage) {
-            if (usage.prompt_tokens) {
-              console.log('Found prompt_tokens in response.done:', usage.prompt_tokens);
+            if (usage.input_tokens) {
+              console.log('Found input_tokens in response.done:', usage.input_tokens);
               if (incrementInputTokens) {
-                incrementInputTokens(usage.prompt_tokens);
+                incrementInputTokens(usage.input_tokens);
               } else {
-                tokenContext.incrementInputTokens(usage.prompt_tokens);
+                tokenContext.incrementInputTokens(usage.input_tokens);
               }
             }
             
-            if (usage.completion_tokens) {
-              console.log('Found completion_tokens in response.done:', usage.completion_tokens);
+            if (usage.output_tokens) {
+              console.log('Found output_tokens in response.done:', usage.output_tokens);
               if (incrementOutputTokens) {
-                incrementOutputTokens(usage.completion_tokens);
+                incrementOutputTokens(usage.output_tokens);
               } else {
-                tokenContext.incrementOutputTokens(usage.completion_tokens);
+                tokenContext.incrementOutputTokens(usage.output_tokens);
               }
             }
+
+            // For total tokens, we might want to log this separately
+            if (usage.total_tokens) {
+              console.log('Total tokens used in this response:', usage.total_tokens);
+            }
           }
-        }
         
         if (serverEvent.response?.output) {
           console.log('Response output items:', serverEvent.response.output);
