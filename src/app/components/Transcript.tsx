@@ -16,6 +16,7 @@ export interface TranscriptProps {
   setUserText: (val: string) => void;
   onSendMessage: () => void;
   canSend: boolean;
+  className?: string;
 }
 
 function Transcript({
@@ -23,6 +24,7 @@ function Transcript({
   setUserText,
   onSendMessage,
   canSend,
+  className,
 }: TranscriptProps) {
   const { transcriptItems, toggleTranscriptItemExpand } = useTranscript();
   const transcriptRef = useRef<HTMLDivElement | null>(null);
@@ -167,7 +169,7 @@ function Transcript({
   };
 
   return (
-    <div className="flex flex-col flex-1 bg-white min-h-0 rounded-xl">
+    <div className={`flex flex-col flex-1 bg-white min-h-0 rounded-xl ${className || ''}`}>
       <div className="relative flex-1 min-h-0">
         <button
           onClick={handleCopyTranscript}

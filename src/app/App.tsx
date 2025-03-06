@@ -8,6 +8,7 @@ import Image from "next/image";
 // UI components
 import Transcript from "./components/Transcript";
 import Events from "./components/Events";
+import Whiteboard from "./components/Whiteboard";
 import BottomToolbar from "./components/BottomToolbar";
 import TokenCounter from "./components/TokenCounter";
 
@@ -646,7 +647,7 @@ function App() {
         </div>
       </div>
 
-      <div className="flex flex-1 gap-2 px-2 overflow-hidden relative">
+      <div className="flex flex-row flex-1 gap-2 px-2 overflow-hidden relative">
         <Transcript
           userText={userText}
           setUserText={setUserText}
@@ -655,9 +656,13 @@ function App() {
             sessionStatus === "CONNECTED" &&
             dcRef.current?.readyState === "open"
           }
+          className="w-2/3"
         />
 
-        <Events isExpanded={isEventsPaneExpanded} />
+        <div className="flex flex-col flex-1 gap-2">
+          <Events isExpanded={isEventsPaneExpanded} />
+          <Whiteboard isExpanded={isEventsPaneExpanded} />
+        </div>
       </div>
 
       <BottomToolbar
