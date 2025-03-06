@@ -75,6 +75,31 @@ function Transcript({
 
   // Custom component renderers for ReactMarkdown
   const markdownComponents = {
+    // Add paragraph component to handle block-level content properly
+    p({node, children, ...props}: any) {
+      // Check if children contains block-level elements
+      const hasBlockElements = React.Children.toArray(children).some(
+        (child) => {
+          if (!React.isValidElement(child)) return false;
+          
+          // Use type assertion to access props
+          const childProps = child.props as any;
+          return (
+            childProps.node?.tagName === 'div' || 
+            childProps.node?.properties?.className?.includes('relative group')
+          );
+        }
+      );
+      
+      // If the paragraph contains block elements, render the children directly
+      if (hasBlockElements) {
+        return <>{children}</>;
+      }
+      
+      // Otherwise, render as normal paragraph
+      return <p {...props}>{children}</p>;
+    },
+    
     code({node, inline, className, children, ...props}: any) {
       const match = /language-(\w+)/.exec(className || '');
       const language = match ? match[1] : '';
@@ -84,7 +109,7 @@ function Transcript({
       };
       
       return !inline ? (
-        <div className="relative group">
+        <div className="relative group" data-code-block="true">
           <button 
             onClick={() => handleCopyCode(String(children))}
             className="absolute top-2 right-2 bg-gray-700 hover:bg-gray-600 text-white rounded px-2 py-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
