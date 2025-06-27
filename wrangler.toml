@@ -1,12 +1,13 @@
-name = "astro-app"
-compatibility_date = "2024-01-01"
+main = "./dist/_worker.js/index.js"
+compatibility_date = "2025-03-25"
+compatibility_flags = [ "nodejs_compat" ]
 
-# Main entry point for the Worker (Astro's _worker.js)
-main = "./dist/_worker.js"
-
-# Static assets configuration
 [assets]
+binding = "ASSETS"
 directory = "./dist"
+
+[observability]
+enabled = true
 
 # Optional: Enable preview URLs
 preview_urls = true
@@ -21,7 +22,3 @@ name = "astro-app-production"
 # Build configuration
 [build]
 command = "npm run build"
-
-# Pages build output directory
-[pages]
-publish = "dist/"
