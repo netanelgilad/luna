@@ -1,5 +1,5 @@
 ---
-
+const deploymentStatus = import.meta.env.PROD ? 'Production' : 'Development';
 ---
 
 <html lang="en">
@@ -8,9 +8,84 @@
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+		<title>Astro on Cloudflare Pages</title>
+		<style>
+			body {
+				font-family: system-ui, -apple-system, sans-serif;
+				line-height: 1.6;
+				max-width: 800px;
+				margin: 0 auto;
+				padding: 2rem;
+				background: #f5f5f5;
+			}
+			.container {
+				background: white;
+				padding: 2rem;
+				border-radius: 8px;
+				box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+			}
+			h1 {
+				color: #ff5e00;
+			}
+			.status {
+				display: inline-block;
+				padding: 0.25rem 0.75rem;
+				background: #ff5e00;
+				color: white;
+				border-radius: 4px;
+				font-size: 0.875rem;
+				font-weight: 600;
+			}
+			code {
+				background: #f0f0f0;
+				padding: 0.2rem 0.4rem;
+				border-radius: 3px;
+				font-size: 0.9rem;
+			}
+			ul {
+				list-style-type: none;
+				padding: 0;
+			}
+			li {
+				margin: 0.5rem 0;
+			}
+			li:before {
+				content: "✓ ";
+				color: #22c55e;
+				font-weight: bold;
+			}
+		</style>
 	</head>
 	<body>
-		<h1>Astro</h1>
+		<div class="container">
+			<h1>🚀 Astro on Cloudflare Pages</h1>
+			<p>Your Astro site is configured and ready for deployment!</p>
+			
+			<p>Environment: <span class="status">{deploymentStatus}</span></p>
+			
+			<h2>✅ Setup Complete</h2>
+			<ul>
+				<li>Wrangler configuration ready</li>
+				<li>Cloudflare adapter installed</li>
+				<li>GitHub Actions workflow configured</li>
+				<li>Build process tested successfully</li>
+			</ul>
+			
+			<h2>📋 Next Steps</h2>
+			<ol>
+				<li>Review the <code>CLOUDFLARE_DEPLOYMENT.md</code> file for setup instructions</li>
+				<li>Add your Cloudflare credentials to GitHub Secrets</li>
+				<li>Create the Pages project with: <code>npx wrangler pages project create astro-app</code></li>
+				<li>Push to the <code>main</code> branch to trigger automatic deployment</li>
+			</ol>
+			
+			<h2>🛠️ Available Commands</h2>
+			<ul style="list-style-type: disc; padding-left: 2rem;">
+				<li><code>npm run dev</code> - Start development server</li>
+				<li><code>npm run build</code> - Build for production</li>
+				<li><code>npm run deploy</code> - Deploy to Cloudflare Pages</li>
+				<li><code>npm run deploy:preview</code> - Deploy to preview branch</li>
+			</ul>
+		</div>
 	</body>
 </html>

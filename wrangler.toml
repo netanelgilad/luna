@@ -1,0 +1,13 @@
+name = "astro-app"
+compatibility_date = "2024-01-01"
+
+[env.production]
+name = "astro-app-production"
+
+# Build configuration
+[build]
+command = "npm run build"
+
+# Pages build output directory
+[pages]
+publish = "dist/"
