@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { Send, Bot, User } from 'lucide-react';

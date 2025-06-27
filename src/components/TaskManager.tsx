@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { useState } from 'react';
 import { Plus, Filter, Search } from 'lucide-react';
 import { TaskItem } from './TaskItem';
@@ -11,8 +10,8 @@ export function TaskManager() {
   const [filterStatus, setFilterStatus] = useState<string>('all');
 
   const handleToggleExpand = (taskId: string) => {
-    setTasks((prevTasks: Task[]) =>
-      prevTasks.map((task: Task) =>
+    setTasks(prevTasks =>
+      prevTasks.map(task =>
         task.id === taskId ? { ...task, isExpanded: !task.isExpanded } : task
       )
     );
@@ -35,8 +34,8 @@ export function TaskManager() {
         timestamp: new Date()
       };
 
-      setTasks((prevTasks: Task[]) =>
-        prevTasks.map((task: Task) =>
+      setTasks(prevTasks =>
+        prevTasks.map(task =>
           task.id === taskId
             ? { ...task, messages: [...task.messages, newMessage, aiResponse] }
             : task
@@ -45,8 +44,8 @@ export function TaskManager() {
     }, 1000);
 
     // Add user message immediately
-    setTasks((prevTasks: Task[]) =>
-      prevTasks.map((task: Task) =>
+    setTasks(prevTasks =>
+      prevTasks.map(task =>
         task.id === taskId
           ? { ...task, messages: [...task.messages, newMessage] }
           : task
@@ -54,7 +53,7 @@ export function TaskManager() {
     );
   };
 
-  const filteredTasks = tasks.filter((task: Task) => {
+  const filteredTasks = tasks.filter(task => {
     const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          task.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesFilter = filterStatus === 'all' || task.status === filterStatus;
@@ -116,7 +115,7 @@ export function TaskManager() {
               <p className="text-gray-500">No tasks found matching your criteria.</p>
             </div>
           ) : (
-            filteredTasks.map((task: Task) => (
+            filteredTasks.map(task => (
               <TaskItem
                 key={task.id}
                 task={task}
@@ -130,7 +129,7 @@ export function TaskManager() {
         {/* Stats */}
         <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
           {(['pending', 'in-progress', 'completed', 'failed'] as const).map((status) => {
-            const count = tasks.filter((t: Task) => t.status === status).length;
+            const count = tasks.filter(t => t.status === status).length;
             return (
               <div key={status} className="bg-white p-4 rounded-lg shadow-sm">
                 <p className="text-sm text-gray-600 capitalize">{status.replace('-', ' ')}</p>

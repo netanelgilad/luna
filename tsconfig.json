@@ -2,6 +2,7 @@
   "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
     "jsx": "react-jsx",
+    "jsxImportSource": "react",
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
@@ -10,9 +11,19 @@
       "@data/*": ["src/data/*"],
       "@styles/*": ["src/styles/*"]
     },
-    "types": ["astro/client"],
+    "types": ["astro/client", "@types/react", "@types/react-dom"],
     "allowImportingTsExtensions": true,
-    "moduleResolution": "bundler"
+    "moduleResolution": "bundler",
+    "module": "ESNext",
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true
   },
   "include": ["src/**/*", ".astro/types.d.ts"],
   "exclude": ["node_modules", "dist"]
