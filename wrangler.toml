@@ -1,4 +1,5 @@
-name = "luna"main = "./dist/_worker.js/index.js"
+name = "luna"
+main = "./dist/_worker.js/index.js"
 compatibility_date = "2025-03-25"
 compatibility_flags = [ "nodejs_compat" ]
 
