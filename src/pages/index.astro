@@ -8,7 +8,7 @@ const deploymentStatus = import.meta.env.PROD ? 'Production' : 'Development';
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro on Cloudflare Pages</title>
+		<title>Astro on Cloudflare Workers</title>
 		<style>
 			body {
 				font-family: system-ui, -apple-system, sans-serif;
@@ -54,37 +54,78 @@ const deploymentStatus = import.meta.env.PROD ? 'Production' : 'Development';
 				color: #22c55e;
 				font-weight: bold;
 			}
+			.feature-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+				gap: 1rem;
+				margin: 2rem 0;
+			}
+			.feature {
+				background: #f9f9f9;
+				padding: 1rem;
+				border-radius: 6px;
+				border-left: 3px solid #ff5e00;
+			}
+			.feature h3 {
+				margin: 0 0 0.5rem 0;
+				font-size: 1rem;
+			}
+			.feature p {
+				margin: 0;
+				font-size: 0.875rem;
+				color: #666;
+			}
 		</style>
 	</head>
 	<body>
 		<div class="container">
-			<h1>🚀 Astro on Cloudflare Pages</h1>
-			<p>Your Astro site is configured and ready for deployment!</p>
+			<h1>🚀 Astro on Cloudflare Workers</h1>
+			<p>Your Astro site is now deployed on Cloudflare Workers with static assets!</p>
 			
 			<p>Environment: <span class="status">{deploymentStatus}</span></p>
 			
-			<h2>✅ Setup Complete</h2>
+			<h2>✅ Migration Complete</h2>
 			<ul>
-				<li>Wrangler configuration ready</li>
-				<li>Cloudflare adapter installed</li>
+				<li>Migrated from Cloudflare Pages to Workers</li>
+				<li>Static assets hosting enabled</li>
 				<li>GitHub Actions workflow configured</li>
-				<li>Build process tested successfully</li>
+				<li>Preview URLs available for each deployment</li>
 			</ul>
+			
+			<h2>🎯 New Features Available</h2>
+			<div class="feature-grid">
+				<div class="feature">
+					<h3>Workers Logs</h3>
+					<p>Built-in logging and observability for better debugging</p>
+				</div>
+				<div class="feature">
+					<h3>Cron Triggers</h3>
+					<p>Schedule tasks to run at specific times</p>
+				</div>
+				<div class="feature">
+					<h3>Queue Consumers</h3>
+					<p>Process background jobs with Cloudflare Queues</p>
+				</div>
+				<div class="feature">
+					<h3>Gradual Deployments</h3>
+					<p>Roll out changes gradually with percentage-based traffic splitting</p>
+				</div>
+			</div>
 			
 			<h2>📋 Next Steps</h2>
 			<ol>
-				<li>Review the <code>CLOUDFLARE_DEPLOYMENT.md</code> file for setup instructions</li>
+				<li>Review the <code>CLOUDFLARE_WORKERS_DEPLOYMENT.md</code> file for setup instructions</li>
 				<li>Add your Cloudflare credentials to GitHub Secrets</li>
-				<li>Create the Pages project with: <code>npx wrangler pages project create astro-app</code></li>
 				<li>Push to the <code>main</code> branch to trigger automatic deployment</li>
+				<li>Configure a custom domain or use your <code>workers.dev</code> subdomain</li>
 			</ol>
 			
 			<h2>🛠️ Available Commands</h2>
 			<ul style="list-style-type: disc; padding-left: 2rem;">
 				<li><code>npm run dev</code> - Start development server</li>
 				<li><code>npm run build</code> - Build for production</li>
-				<li><code>npm run deploy</code> - Deploy to Cloudflare Pages</li>
-				<li><code>npm run deploy:preview</code> - Deploy to preview branch</li>
+				<li><code>npm run deploy</code> - Deploy to Cloudflare Workers</li>
+				<li><code>npm run deploy:preview</code> - Deploy to preview environment</li>
 			</ul>
 		</div>
 	</body>
