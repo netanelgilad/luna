@@ -10,16 +10,6 @@ directory = "./dist"
 [observability]
 enabled = true
 
-# Optional: Enable preview URLs
-preview_urls = true
-
-# Optional: Use workers.dev subdomain
-workers_dev = true
-
-# Production environment configuration
-[env.production]
-name = "astro-app-production"
-
 # Build configuration
 [build]
 command = "npm run build"
