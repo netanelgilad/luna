@@ -1,6 +1,0 @@
-before executing any code changing commands, make sure the code you analyzed to perform the change is indexed in this file.
-Use a consise structured indexing system, that would allow the minimal lookup needed in this file in order to read the code that is required to perform a task.
-
-Any task definition generated should include, as its first step, reading and following the instructions in this index.ai file to ensure compliance with the project's standards and guidelines.
-
-Always finalize any task by verifying TypeScript using 'npx tsc --noEmit' to ensure there are no type errors before considering the task complete.
