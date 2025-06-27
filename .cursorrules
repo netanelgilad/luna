@@ -1,0 +1,52 @@
+# AI Task Manager - Cursor Rules
+
+## Project Context
+This is an Astro project using Tailwind CSS v4 (alpha) for styling.
+
+## Technology Stack
+- **Framework**: Astro 5.x with React integration
+- **Styling**: Tailwind CSS v4 (uses @import syntax, not @tailwind directives)
+- **UI Components**: React 18 with TypeScript
+- **Icons**: lucide-react
+- **Date Formatting**: date-fns
+- **Deployment**: Cloudflare Workers
+
+## Important Guidelines
+
+### Tailwind CSS v4 Specifics
+- Use `@import "tailwindcss"` in CSS files, NOT the old @tailwind directives
+- No tailwind.config.js file needed - configuration is done via CSS
+- Theme extensions use the `@theme` directive
+- Tailwind v4 uses a new architecture with Lightning CSS
+
+### Astro Specifics
+- Components in src/components/ are React components (.tsx)
+- Pages in src/pages/ are Astro components (.astro)
+- Use `client:load` directive for interactive React components in Astro files
+- Global styles should be imported in Astro pages
+
+### Component Structure
+- React components use TypeScript with proper type definitions
+- Follow the existing pattern for task management components
+- Use Tailwind utility classes for all styling
+- Maintain consistent spacing and color schemes
+
+### Code Style
+- Use functional React components with hooks
+- TypeScript for all component files
+- Proper type imports from src/types/
+- Mock data stored in src/data/
+
+### File Naming
+- React components: PascalCase (e.g., TaskManager.tsx)
+- Types: camelCase (e.g., index.ts in types folder)
+- Styles: kebab-case (e.g., global.css)
+
+### Current Features
+- AI task management UI with chat interface
+- Pull request integration display
+- Real-time chat simulation
+- Search and filter functionality
+- Responsive design
+
+When making changes, ensure compatibility with Tailwind CSS v4 syntax and Astro's component model.

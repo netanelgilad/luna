@@ -8,5 +8,11 @@ import tailwind from "@astrojs/tailwind";
 export default defineConfig({
   output: 'server',
   adapter: cloudflare(),
-  integrations: [react(), tailwind()]
+  integrations: [
+    react(),
+    tailwind({
+      // Tailwind v4 specific configuration
+      applyBaseStyles: false, // We handle base styles via @import
+    })
+  ]
 });

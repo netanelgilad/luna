@@ -1,0 +1,45 @@
+/* Example Tailwind CSS v4 Theme Customization */
+/* This file shows how to extend Tailwind v4's theme using CSS */
+
+@import "tailwindcss";
+
+@theme {
+  /* Custom Colors */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93bbfc;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+
+  /* Custom Spacing */
+  --spacing-18: 4.5rem;
+  --spacing-88: 22rem;
+
+  /* Custom Font Sizes */
+  --font-size-2xs: 0.625rem;
+  --font-size-3xl: 1.875rem;
+
+  /* Custom Border Radius */
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+}
+
+/* Custom Utilities using Tailwind v4 syntax */
+@utility {
+  .text-primary {
+    color: var(--color-primary-600);
+  }
+
+  .bg-primary {
+    background-color: var(--color-primary-600);
+  }
+
+  .border-primary {
+    border-color: var(--color-primary-600);
+  }
+}
