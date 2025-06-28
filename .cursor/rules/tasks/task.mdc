@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+When a <task>...</task> is mentioned you are being requested to just perform a task. IN CASE OF SUCESSFULL COMPLETION DO NOT RETURN ANY TEXT MESSAGES - JUST USE TOOLS TO PERFORM THE TASK. in case of error - you can return text freely to explain what went wrong.

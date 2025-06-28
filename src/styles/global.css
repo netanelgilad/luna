@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+/* Custom theme extensions for Tailwind v4 */
+@theme {
+  /* You can extend the theme here if needed */
+}

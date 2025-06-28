@@ -1,4 +1,100 @@
-# Astro Starter Kit: Minimal
+# AI Task Manager
+
+A modern web application for managing AI-based tasks with an integrated chat interface. Built with Astro, React, and Tailwind CSS v4.
+
+## Features
+
+- 🤖 **AI Task Management**: Track tasks assigned to different AI assistants
+- 💬 **Integrated Chat**: Converse with AI about each task directly in the UI
+- 🔗 **Pull Request Integration**: View associated PRs with status indicators
+- 🔍 **Search & Filter**: Find tasks quickly with search and status filters
+- 📊 **Task Statistics**: Dashboard view of task statuses
+- 🎨 **Modern UI**: Beautiful, responsive design with Tailwind CSS v4
+
+## Tech Stack
+
+- **Framework**: [Astro](https://astro.build/) v5.x
+- **UI Components**: React 18 with TypeScript
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) (Alpha) with @tailwindcss/vite
+- **Icons**: Lucide React
+- **Date Handling**: date-fns
+- **Deployment**: Cloudflare Workers
+
+## Tailwind CSS v4 Setup
+
+This project uses Tailwind CSS v4 (alpha) with the official Vite plugin:
+
+- **Vite Plugin**: Uses `@tailwindcss/vite` configured in `astro.config.mjs`
+- **No config file**: Configuration is done via CSS using `@theme` directive
+- **Import syntax**: `@import "tailwindcss"` in CSS files
+- **Custom utilities**: Defined with `@utility` directive
+
+See `src/styles/tailwind-v4-theme.css` for theme customization examples.
+
+### Using @apply in Components
+
+When using `@apply` in Astro component styles, you need to reference the main CSS file:
+
+```astro
+<style>
+  @reference "../styles/global.css";
+  
+  .my-class {
+    @apply text-2xl font-bold;
+  }
+</style>
+```
+
+## Getting Started
+
+1. Install dependencies:
+   ```bash
+   npm install --legacy-peer-deps
+   ```
+
+2. Run the development server:
+   ```bash
+   npm run dev
+   ```
+
+3. Open [http://localhost:4321](http://localhost:4321) in your browser
+
+## Project Structure
+
+```
+src/
+├── components/     # React components
+│   ├── TaskManager.tsx
+│   ├── TaskItem.tsx
+│   └── ChatInterface.tsx
+├── data/          # Mock data
+│   └── mockData.ts
+├── pages/         # Astro pages
+│   └── index.astro
+├── styles/        # Global styles
+│   ├── global.css
+│   └── tailwind-v4-theme.css
+└── types/         # TypeScript types
+    └── index.ts
+```
+
+## Development
+
+The project includes a `.cursorrules` file with AI coding assistant guidelines specific to this Astro + Tailwind v4 setup.
+
+## Deployment
+
+Deploy to Cloudflare Workers:
+
+```bash
+npm run deploy
+```
+
+For preview deployments:
+
+```bash
+npm run deploy:preview
+```
 
 ```sh
 npm create astro@latest -- --template minimal

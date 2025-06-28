@@ -1,0 +1,6 @@
+---
+description: instrcutions when adding new npm packages
+globs: 
+alwaysApply: false
+---
+don't invent npm package versions, use npm install to packages, and if you gotta know a package latest version then use npm view
