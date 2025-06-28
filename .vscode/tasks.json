@@ -1,0 +1,46 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Template Rules",
+      "type": "shell",
+      "command": "node",
+      "args": ["template-rules.js"],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": [],
+      "detail": "Runs the rule file templating script to update .cursor/rules files"
+    },
+    {
+      "label": "Template Rules (Watch)",
+      "type": "shell",
+      "command": "node",
+      "args": ["template-rules.js", "--watch"],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated",
+        "showReuseMessage": true,
+        "clear": true
+      },
+      "isBackground": true,
+      "problemMatcher": [],
+      "detail": "Watches .cursor/rules folder and automatically retemplates files on changes"
+    }
+  ]
+} 

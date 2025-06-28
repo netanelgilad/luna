@@ -1,0 +1,90 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Astro Layouts
+
+Layouts are reusable Astro components providing page structure (headers, nav, footers). Place in `src/layouts/` conventionally.
+
+## Basic Layout
+- Contains `<html>`, `<head>`, `<body>` shell
+- Uses `<slot />` for page content injection
+- Accepts props, imports components like any Astro component
+- Can include UI frameworks, client scripts
+
+```astro
+// src/layouts/MySiteLayout.astro
+---
+const { title } = Astro.props;
+---
+<html lang="en">
+  <head><BaseHead title={title}/></head>
+  <body>
+    <nav><a href="#">Home</a></nav>
+    <h1>{title}</h1>
+    <article><slot /></article>
+    <Footer />
+  </body>
+</html>
+```
+
+## TypeScript
+```astro
+---
+interface Props { title: string; description: string; }
+const { title, description } = Astro.props;
+---
+```
+
+## Markdown Layouts
+For `.md` files in `src/pages/`, use `layout` frontmatter:
+```markdown
+---
+layout: ../layouts/BlogPostLayout.astro
+title: "Hello"
+---
+```
+
+Layout receives:
+- `frontmatter` prop with all frontmatter data
+- `file`, `url`, `headings` array
+- `rawContent()`, `compiledContent()` functions
+
+```astro
+---
+const { frontmatter } = Astro.props;
+---
+<html>
+  <head><title>{frontmatter.title}</title></head>
+  <body>
+    <h1>{frontmatter.title}</h1>
+    <slot />
+  </body>
+</html>
+```
+
+Type with `MarkdownLayoutProps<{title: string}>`.
+
+## MDX Manual Import
+Import layout directly in MDX:
+```mdx
+import BaseLayout from '../../layouts/BaseLayout.astro';
+<BaseLayout title={frontmatter.title}>Content</BaseLayout>
+```
+
+## Nesting Layouts
+Layouts can wrap other layouts:
+```astro
+---
+import BaseLayout from './BaseLayout.astro';
+---
+<BaseLayout>
+  <h1>{frontmatter.title}</h1>
+  <slot />
+</BaseLayout>
+```
+
+## Base Layout
+
+All layouts must directly or indirectly use `src/layouts/BaseLayout`:

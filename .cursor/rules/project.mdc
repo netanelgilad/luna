@@ -1,7 +1,12 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
 # AI Task Manager - Cursor Rules
 
 ## Project Context
-This is an Astro project using Tailwind CSS v4 (alpha) for styling with the official @tailwindcss/vite plugin.
+This is an Astro project using Tailwind CSS v4 for styling with the official @tailwindcss/vite plugin.
 
 ## Technology Stack
 - **Framework**: Astro 5.x with React integration

@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+<task>TL;DR document content for LLMs - minimize tokens while preserving full knowledge. Replace file content, don't output the TL;DR. Don't TLDR this document, this is just the task.</task>
