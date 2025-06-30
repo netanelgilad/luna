@@ -44,9 +44,9 @@ export class WhatsAppClient {
   ) => Promise<WhatsAppResult<Awaited<ReturnType<T>>>> {
     return async (...args: Parameters<T>) => {
       // Wait for initialization to complete with timeout
-      console.log("WhatsApp DO: Waiting for status change", this.clientStatus);
+      console.log("WhatsApp DO: Waiting for status change", this.clientStatus.status);
       await this.waitForStatusChange();
-      console.log("WhatsApp DO: Status change complete", this.clientStatus);
+      console.log("WhatsApp DO: Status change complete", this.clientStatus.status);
 
       switch (this.clientStatus.status) {
         case "ready":
