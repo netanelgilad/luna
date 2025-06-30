@@ -6,9 +6,11 @@ import {
   type WhatsAppResult,
 } from "../durable-objects/WhatsappClient";
 import type { Chat } from "whatsapp-web.js";
+import { generateWhatsAppBrief, transformChatDataForAI, type WhatsAppBrief } from "../utils/ai";
 
 // Types for WhatsApp client result - now using the DO's discriminated union
 export type { WhatsAppResult } from "../durable-objects/WhatsappClient";
+export type { WhatsAppBrief } from "../utils/ai";
 
 // Simplified chat data for UI
 export interface ChatData {
@@ -90,6 +92,35 @@ export const server = {
       }
       
       return result as WhatsAppResult<ChatData[]>;
+    },
+  }),
+  generateWhatsAppBrief: defineAction({
+    handler: async (): Promise<WhatsAppResult<WhatsAppBrief>> => {
+      try {
+        const client = getWhatsAppClient();
+        const result = await client.getChatDataForBrief();
+        
+        if (result.status === 'ready') {
+          // Transform the data for AI processing
+          const transformedData = transformChatDataForAI(result.data);
+          
+          // Generate the AI brief
+          const brief = await generateWhatsAppBrief(transformedData);
+          
+          return {
+            status: 'ready',
+            data: brief
+          };
+        }
+        
+        return result as WhatsAppResult<WhatsAppBrief>;
+      } catch (error) {
+        console.error("Error generating WhatsApp brief:", error);
+        return {
+          status: "error",
+          error: error instanceof Error ? error.message : "Unknown error",
+        };
+      }
     },
   }),
 };

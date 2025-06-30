@@ -44,9 +44,9 @@ export class WhatsAppClient {
   ) => Promise<WhatsAppResult<Awaited<ReturnType<T>>>> {
     return async (...args: Parameters<T>) => {
       // Wait for initialization to complete with timeout
-      console.log("WhatsApp DO: Waiting for status change");
+      console.log("WhatsApp DO: Waiting for status change", this.clientStatus);
       await this.waitForStatusChange();
-      console.log("WhatsApp DO: Status change complete");
+      console.log("WhatsApp DO: Status change complete", this.clientStatus);
 
       switch (this.clientStatus.status) {
         case "ready":
@@ -109,6 +109,48 @@ export class WhatsAppClient {
     console.log("WhatsApp DO: Getting chats");
     const chats = await client.getChats();
     return chats;
+  });
+
+  // Get messages from a specific chat
+  getChatMessages = this.withClient((client) => async (chatId: string, limit: number = 10) => {
+    console.log("WhatsApp DO: Getting messages for chat", chatId);
+    const chat = await client.getChatById(chatId);
+    const messages = await chat.fetchMessages({ limit });
+    return messages;
+  });
+
+  // Get chat data with messages for AI brief
+  getChatDataForBrief = this.withClient((client) => async () => {
+    console.log("WhatsApp DO: Getting chat data for AI brief");
+    const chats = await client.getChats();
+    
+    // Sort chats by timestamp (newest first) and take the first 10
+    const sortedChats = chats.sort((a, b) => {
+      const aTimestamp = a.timestamp || 0;
+      const bTimestamp = b.timestamp || 0;
+      return bTimestamp - aTimestamp;
+    }).slice(0, 10);
+
+    // Get messages for each chat
+    const chatDataWithMessages = await Promise.all(
+      sortedChats.map(async (chat) => {
+        try {
+          const messages = await chat.fetchMessages({ limit: 10 });
+          return {
+            chat,
+            messages
+          };
+        } catch (error) {
+          console.error(`Error fetching messages for chat ${chat.id?.user}:`, error);
+          return {
+            chat,
+            messages: []
+          };
+        }
+      })
+    );
+
+    return chatDataWithMessages;
   });
 
   private async initializeClient(): Promise<void> {
