@@ -36,7 +36,6 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_DISABLE_DEV_SHM_USAGE=true \
     CHROME_PATH=/usr/bin/chromium-browser \
     CHROME_DEVEL_SANDBOX=/usr/local/sbin/chrome-devel-sandbox \
-    NODE_ENV=production \
     PUPPETEER_CACHE_DIR=/app/.cache/puppeteer
 
 # Copy package files with correct ownership
@@ -50,6 +49,9 @@ COPY --chown=pptruser:pptruser . .
 
 # Build the application
 RUN npm run build
+
+# Set production environment after build
+ENV NODE_ENV=production
 
 # Expose the port
 EXPOSE 8080
