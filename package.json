@@ -2,14 +2,13 @@
   "name": "workspace",
   "type": "module",
   "version": "0.0.1",
+  "main": "./dist/server/entry.mjs",
   "scripts": {
     "postinstall": "patch-package",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro",
-    "deploy": "wrangler deploy",
-    "deploy:preview": "wrangler deploy --env preview"
+    "astro": "astro"
   },
   "dependencies": {
     "@astrojs/node": "^9.2.2",
