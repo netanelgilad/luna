@@ -44,10 +44,12 @@ COPY --chown=pptruser:pptruser package*.json ./
 
 # Install dependencies
 RUN npm install
-RUN npm run build
 
 # Copy the rest of the application with correct ownership
 COPY --chown=pptruser:pptruser . .
+
+# Build the application
+RUN npm run build
 
 # Expose the port
 EXPOSE 8080
