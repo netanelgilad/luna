@@ -30,3 +30,6 @@ pnpm-debug.log*
 wrangler-debug.log
 
 .specstory/
+
+.wwebjs_cache/
+.wwebjs_auth/

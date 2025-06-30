@@ -1,0 +1,112 @@
+---
+description: Select this file when your task requires programmatic access to WhatsApp Web through Node.js or when you need to automate, send, or receive WhatsApp messages using JavaScript.
+globs: 
+alwaysApply: false
+---
+whatsapp-web.js is a Node.js client library for programmatically controlling WhatsApp Web via Puppeteer.
+
+Main Usage:
+-----------
+1. Import and construct a Client instance:
+   const { Client, LocalAuth, LegacySessionAuth } = require('whatsapp-web.js');
+
+   // Example with LocalAuth (recommended)
+   const client = new Client({
+       authStrategy: new LocalAuth({ clientId: 'my-session' }),
+       puppeteer: { headless: true }
+   });
+
+   client.initialize();
+
+2. Listen for events:
+   client.on('qr', qr => { ... });                // QR code for authentication
+   client.on('ready', () => { ... });             // Client is authenticated and ready
+   client.on('message', msg => { ... });          // New message received
+   client.on('auth_failure', msg => { ... });     // Authentication failed
+
+3. Sending messages:
+   await client.sendMessage(chatId, content[, options])
+   // chatId: string (e.g. '123456789@c.us')
+   // content: string | MessageMedia
+   // options: { quotedMessageId?, mentions?, ... }
+
+4. Receiving messages:
+   client.on('message', message => { ... });
+   // message: Message object (see below)
+
+5. Fetching chats/contacts:
+   const chats = await client.getChats();
+   const contacts = await client.getContacts();
+
+6. Media handling:
+   const media = await MessageMedia.fromUrl(url);
+   await client.sendMessage(chatId, media);
+
+7. Session management:
+   // For LocalAuth: session is managed automatically in a local folder.
+   // For LegacySessionAuth: use the 'authenticated' event to save session tokens.
+
+API Overview:
+-------------
+
+Class: Client
+-------------
+constructor(options?: ClientOptions)
+- options.authStrategy: LocalAuth | LegacySessionAuth | Custom
+- options.puppeteer: Puppeteer launch options
+- options.puppeteerModule: Custom Puppeteer module (e.g., @cloudflare/puppeteer)
+
+Methods:
+- initialize(): Promise<void>
+- destroy(): Promise<void>
+- logout(): Promise<void>
+- sendMessage(chatId: string, content: string | MessageMedia, options?: object): Promise<Message>
+- getChats(): Promise<Chat[]>
+- getContacts(): Promise<Contact[]>
+- getChatById(chatId: string): Promise<Chat>
+- getContactById(contactId: string): Promise<Contact>
+- on(event: string, callback: function): void
+
+Events:
+- 'qr': qrCodeString
+- 'ready'
+- 'authenticated': session
+- 'auth_failure': message
+- 'message': Message
+
+Class: Message
+--------------
+- id: string
+- body: string
+- from: string
+- to: string
+- hasMedia: boolean
+- downloadMedia(): Promise<MessageMedia | null>
+- reply(content: string | MessageMedia, options?): Promise<Message>
+
+Class: MessageMedia
+-------------------
+- static fromFilePath(path: string): Promise<MessageMedia>
+- static fromUrl(url: string): Promise<MessageMedia>
+- mimetype: string
+- data: string (base64)
+
+Class: Chat
+-----------
+Represents a WhatsApp conversation (individual, group, or broadcast).
+
+Properties:
+- chat.id: ChatId object (contains _serialized, user, server)
+- chat.name: Display name
+- chat.isGroup: boolean
+- chat.isReadOnly: boolean
+- chat.unreadCount: number
+- chat.timestamp: number (last activity, epoch ms)
+- chat.archived: boolean
+- chat.pinned: boolean
+- chat.muted: boolean
+
+Methods (async):
+- sendMessage(content, [options]): Promise<Message>
+- fetchMessages([options]): Promise_
+

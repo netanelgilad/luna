@@ -7,9 +7,6 @@
         "src/*"
       ]
     },
-    "types": [
-      "astro/client"
-    ],
     "noEmit": true,
     "jsx": "react-jsx",
     "jsxImportSource": "react"

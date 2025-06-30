@@ -3,6 +3,7 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
+    "postinstall": "patch-package",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
@@ -11,6 +12,7 @@
     "deploy:preview": "wrangler deploy --env preview"
   },
   "dependencies": {
+    "@astrojs/node": "^9.2.2",
     "@astrojs/react": "^4.3.0",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
@@ -19,13 +21,14 @@
     "date-fns": "^3.0.0",
     "lucide-react": "^0.525.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "whatsapp-web.js": "^1.31.0"
   },
   "devDependencies": {
-    "@astrojs/cloudflare": "^12.6.0",
     "@tailwindcss/vite": "^4.1.11",
     "@types/node": "^24.0.4",
+    "patch-package": "^8.0.0",
     "tailwindcss": "^4.1.11",
-    "wrangler": "^3.110.0"
+    "wrangler": "^4.22.0"
   }
 }

@@ -1,17 +1,37 @@
 ---
+import BaseLayout from "@/layouts/BaseLayout.astro";
 import { TaskManager } from '../components/TaskManager';
-import '../styles/global.css';
+import { WhatsAppCounter } from '../components/WhatsAppCounter';
+import { WhatsAppChatList } from '../components/WhatsAppChatList';
+
+// Make this page server-side rendered to support API calls
+export const prerender = false;
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>AI Task Manager</title>
-	</head>
-	<body>
-		<TaskManager client:load />
-	</body>
-</html>
+<BaseLayout>
+	<title>AI Task Manager</title>
+	<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+	<meta name="generator" content={Astro.generator} />
+	
+	<Fragment slot="body">
+		<div class="min-h-screen bg-gray-50 py-8">
+			<div class="container mx-auto px-4">
+				<h1 class="text-3xl font-bold text-center text-gray-900 mb-8">
+					AI Task Manager
+				</h1>
+				
+				<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+					<!-- WhatsApp Counter -->
+					<div class="lg:col-span-1">
+						<WhatsAppCounter client:load />
+					</div>
+					
+					<!-- WhatsApp Chat List -->
+					<div class="lg:col-span-2">
+						<WhatsAppChatList client:load />
+					</div>
+				</div>
+			</div>
+		</div>
+	</Fragment>
+</BaseLayout>

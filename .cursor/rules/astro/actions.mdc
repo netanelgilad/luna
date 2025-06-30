@@ -1,0 +1,153 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Astro Actions TL;DR
+
+Type-safe server functions callable from client/server with auto validation. Replaces API endpoints for seamless client-server communication.
+
+## Setup
+```ts title="src/actions/index.ts"
+import { defineAction } from 'astro:actions';
+import { z } from 'astro:schema';
+
+export const server = {
+  myAction: defineAction({
+    input: z.object({ name: z.string() }),
+    handler: async (input) => `Hello, ${input.name}!`
+  })
+}
+```
+
+## Client Usage
+```astro
+<script>
+import { actions } from 'astro:actions';
+const { data, error } = await actions.myAction({ name: "Houston" });
+// Or throw errors: const data = await actions.myAction.orThrow({ name: "Houston" });
+</script>
+```
+
+## Form Data
+```ts
+// Accept form data
+export const server = {
+  newsletter: defineAction({
+    accept: 'form', // Enable form data
+    input: z.object({
+      email: z.string().email(),
+      terms: z.boolean()
+    }),
+    handler: async ({ email, terms }) => { /* ... */ }
+  })
+}
+```
+
+```astro
+<!-- Client form submission -->
+<form>
+  <input name="email" type="email" required />
+  <input name="terms" type="checkbox" required />
+  <button>Submit</button>
+</form>
+<script>
+import { actions } from 'astro:actions';
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const { error } = await actions.newsletter(new FormData(form));
+  if (!error) navigate('/success');
+});
+</script>
+
+<!-- HTML form action (zero-JS) -->
+<form method="POST" action={actions.newsletter}>
+  <input name="email" type="email" required />
+  <input name="terms" type="checkbox" required />
+  <button>Submit</button>
+</form>
+```
+
+## Error Handling
+```ts
+import { ActionError } from 'astro:actions';
+
+handler: async (input, ctx) => {
+  if (!ctx.cookies.has('user-session')) {
+    throw new ActionError({
+      code: "UNAUTHORIZED",
+      message: "User must be logged in"
+    });
+  }
+}
+```
+
+```ts
+// Client error handling
+const { data, error } = await actions.likePost({ postId });
+if (error?.code === 'UNAUTHORIZED') setShowLogin(true);
+
+// Input validation errors
+import { isInputError } from 'astro:actions';
+if (isInputError(error)) {
+  const emailError = error.fields.email?.join(', ');
+}
+```
+
+## Server-side Usage
+```astro
+---
+// In Astro component
+const result = Astro.getActionResult(actions.createProduct);
+if (result && !result.error) {
+  return Astro.redirect(`/products/${result.data.id}`);
+}
+
+// Direct server call
+const { data, error } = await Astro.callAction(actions.findProduct, { query });
+---
+```
+
+## Organization
+```ts
+// src/actions/user.ts
+export const user = {
+  getUser: defineAction(/* ... */),
+  createUser: defineAction(/* ... */)
+}
+
+// src/actions/index.ts
+import { user } from './user';
+export const server = { user, otherAction: defineAction(/* ... */) }
+
+// Usage: actions.user.getUser()
+```
+
+## Security
+Actions are public endpoints at `/_actions/{actionName}`. Always authorize:
+
+```ts
+// In handler
+if (!context.locals.user) {
+  throw new ActionError({ code: 'UNAUTHORIZED' });
+}
+
+// In middleware
+import { getActionContext } from 'astro:actions';
+const { action } = getActionContext(context);
+if (action?.calledFrom === 'rpc' && !context.cookies.has('session')) {
+  return new Response('Forbidden', { status: 403 });
+}
+```
+
+## Advanced: Session Persistence
+Use middleware with `getActionContext()`, `setActionResult()`, `serializeActionResult()` for POST/Redirect/GET pattern to persist form results across redirects.
+
+## Key Patterns
+- `accept: 'form'` for form data
+- `transition:persist` to preserve input values on error
+- `method="POST" action={actions.name}` for HTML forms
+- `enctype="multipart/form-data"` for file uploads
+- Check `error` before using `data`
+- Use `ActionError` for structured errors
+- Always validate authorization in handlers

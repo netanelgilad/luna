@@ -1,15 +1,13 @@
 // @ts-check
 /// <reference types="astro/env" />
-import cloudflare from "@astrojs/cloudflare";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 
 import react from "@astrojs/react";
 
-// https://astro.build/config
-export default defineConfig({
-  adapter: cloudflare(),
+import node from "@astrojs/node";
 
+export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
     resolve: {
@@ -24,4 +22,8 @@ export default defineConfig({
   },
 
   integrations: [react()],
+
+  adapter: node({
+    mode: "standalone",
+  }),
 });
